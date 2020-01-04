@@ -30,15 +30,15 @@ class NaturalEvolutionStrategy:
         for i in range(num_iter):
 
             # Sample set of noise from a normal distribution
-            noises = np.random.normal(loc=0.0, scale=1.0, size=num_workers)
+            noises = np.random.normal(loc=0.0, scale=1.0, size=(num_workers, self.solution.shape[0]))
             logging.debug(f"noise: {noises}")
 
             # Create new solutions with the sampled noise and SD
-            new_solutions = np.array([self.solution + self.sd * noise for noise in noises])
+            new_solutions = self.solution + self.sd * noises
             logging.debug(f"solutions: {new_solutions}")
 
             # Evaluate function over the set of solutions
-            fitness_evals = [self.fitness(sol) for sol in new_solutions]
+            fitness_evals = np.array([self.fitness(sol) for sol in new_solutions]).reshape(-1, 1)
             logging.debug(f"fitness: {fitness_evals}")
             
             # Estimate gradient for each worker
